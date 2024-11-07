@@ -15,9 +15,9 @@ public class MenuController : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
-    public void Directions()
+    public void Selection()
     {
-        SceneManager.LoadScene("Directions");
+        SceneManager.LoadScene("Selection");
     }
 
     public void GameOver()

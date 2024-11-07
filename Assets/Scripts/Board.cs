@@ -1,4 +1,5 @@
 using System.Numerics;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -8,9 +9,11 @@ public class Board : MonoBehaviour
 {
     public MenuController menuController { get; private set; }
     public SoundEffectController SFXcontroller { get; private set; }
+    public SongController songController { get; private set; }
 
     public Tilemap tilemap { get; private set; }    // reference to tilemap
     public Piece activePiece { get; private set; }  // reference to tetris piece
+
     public TetrominoData[] tetrominos;  // array of tetromino data to customize tetrominos in unity editor
     public Vector3Int spawnPosition;    // modified in Unity editor, spawn piece at position
     public Vector2Int boardSize = new Vector2Int(10, 20); // defining bounds for valid piece position
@@ -25,68 +28,26 @@ public class Board : MonoBehaviour
         }
     }
 
-    private AudioSource music;
-    private bool musicHasEnded = false;
-    public AudioClip getLuckyClip;
-    public AudioClip bakaMitaiClip;
-    public AudioClip galdinQuayClip;
-
 /* initialize values and populate tetromino data */
     public void Awake() // called automatically when component is initialized
     {
-        this.tilemap = GetComponentInChildren<Tilemap>();
-        this.activePiece = GetComponentInChildren<Piece>();
         this.menuController = GetComponentInChildren<MenuController>();
         this.SFXcontroller = GetComponentInChildren<SoundEffectController>();
+        this.songController = GameObject.Find("SongController").GetComponent<SongController>();
+
+        this.tilemap = GetComponentInChildren<Tilemap>();
+        this.activePiece = GetComponentInChildren<Piece>();
+
         /* populate tetrominos array with tetrominodata */
         for (int i = 0; i < this.tetrominos.Length; i++)
             this.tetrominos[i].Initialize();
-        if (music == null)
-            music = gameObject.AddComponent<AudioSource>();
     }
 
 /* when our game starts, we can spawn a piece AND choose which song to play */
     public void Start()
     {
         SpawnPiece();
-        PlayMusic();
-    }
-
-    public void PlayMusic()
-    {
-        // get song name from playerprefs
-        string selectedSong = PlayerPrefs.GetString("SelectedSong", "");
-        float bpm = PlayerPrefs.GetFloat("SelectedBPM", 116f);
-
-        // select AudioClip based on song name saved in player prefs
-        switch (selectedSong)
-        {
-            case "Get Lucky":
-                music.clip = getLuckyClip;
-                break;
-            case "Baka Mitai":
-                music.clip = bakaMitaiClip;
-                break;
-            case "Galdin Quay":
-                music.clip = galdinQuayClip;
-                break;
-            default:
-                Debug.LogError("No valid song found in PlayerPrefs.");
-                return;
-        }
-
-        if (music.clip != null)
-            music.Play();
-    }
-
-    public void Update()
-    {
-        // check if music ended -> go to game over screen
-        if (!musicHasEnded && music.time >= music.clip.length)
-        {
-            musicHasEnded = true;
-            GameOver();
-        }
+        songController.PlayMusic();
     }
 
 /* pick an element from our array to spawn */
@@ -104,10 +65,10 @@ public class Board : MonoBehaviour
             GameOver();
     }
 
-    private void GameOver()
+    public void GameOver()
     {
-        this.tilemap.ClearAllTiles(); // clear the entire board
         SFXcontroller.PlayGameOverSound();
+        this.tilemap.ClearAllTiles(); // clear the entire board
         menuController.GameOver();    // go to game over screen
     }
 

@@ -6,8 +6,10 @@ using UnityEngine;
 /* individual piece = controlling, moving and rotating */
 public class Piece : MonoBehaviour
 {
+    public SoundEffectController SFXcontroller;
     public Board board { get; private set; }
     public TetrominoData data { get; private set; }
+
     public Vector3Int[] cells { get; private set; } // treat cells as tiles
     public Vector3Int position { get; private set; } // tilemaps use vector3int
     public int rotationIndex { get; private set; } // track rotation index (piece configuration)
@@ -27,6 +29,8 @@ public class Piece : MonoBehaviour
         this.rotationIndex = 0; // default rotation position
         this.stepTime = Time.time + this.stepDelay; // step time is 1 second past current time (when compared with curr time, determines whether we step or not)
         this.lockTime = 0f; // when lockTime exceeds lockDelay, lock piece
+
+        this.SFXcontroller = GetComponentInChildren<SoundEffectController>();
 
         /* array of cells to modify tetromino position */
         if (this.cells == null)
@@ -83,6 +87,7 @@ public class Piece : MonoBehaviour
 
     private void Lock()
     {
+        this.SFXcontroller.PlayLockSound();
         this.board.Set(this); // lock the piece into place
         this.board.ClearLines(); // try to clear any lines that can be cleared
         this.board.SpawnPiece(); // create a new piece to play with

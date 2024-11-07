@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 70b03ec5036eb5e489535a78f34053c3
   - enabled: 1
-    path: Assets/Scenes/Directions.unity
+    path: Assets/Scenes/Selection.unity
     guid: 7ccfcefc4974d6a45bc14a08f54242fa
   - enabled: 1
     path: Assets/Scenes/TetrisBoard.unity
